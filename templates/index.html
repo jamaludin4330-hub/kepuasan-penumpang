@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Aplikasi prediksi kepuasan penumpang maskapai penerbangan menggunakan algoritma Logistic Regression.">
+<title>Prediksi Kepuasan Penumpang Maskapai</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap brand">
+    <span class="brand-tag">TA-03 | PEMBELAJARAN MESIN</span>
+    <h1>Prediksi Kepuasan Penumpang Maskapai Penerbangan</h1>
+    <p>Menggunakan algoritma Logistic Regression</p>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Navigasi utama">
+  <div class="wrap tabs">
+    <button class="tab-btn active" data-tab="beranda" type="button">Beranda</button>
+    <button class="tab-btn" data-tab="prediksi" type="button">Prediksi</button>
+    <button class="tab-btn" data-tab="performa" type="button">Performa Model</button>
+    <button class="tab-btn" data-tab="eksplorasi" type="button">Eksplorasi Data</button>
+    <button class="tab-btn" data-tab="panduan" type="button">Panduan</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ===================== BERANDA ===================== -->
+  <section id="beranda" class="tab active">
+
+    <div class="hero">
+      <div>
+        <span class="chip">Tugas Akhir 3 - Pembelajaran Mesin</span>
+        <h2>Ketahui lebih awal apakah penumpang akan puas</h2>
+        <p>Aplikasi ini membantu tim layanan pelanggan maskapai memperkirakan kepuasan penumpang dari profil perjalanan dan penilaian layanan, lengkap dengan probabilitas, faktor penentu, dan rekomendasi tindakan.</p>
+        <div class="btn-row">
+          <button class="btn btn-accent" data-go="prediksi" type="button">Mulai Prediksi</button>
+          <button class="btn btn-outline-light" data-go="performa" type="button">Lihat Performa Model</button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b id="hs-train">-</b><span>data latih</span></div>
+        <div class="stat"><b id="hs-fitur">22</b><span>fitur penumpang</span></div>
+        <div class="stat"><b id="hs-auc">-</b><span>AUC pada data uji</span></div>
+      </div>
+    </div>
+
+    <h3 class="block-title">Ringkasan hasil model</h3>
+    <p class="section-sub">Dievaluasi pada data uji yang terpisah dari data latih.</p>
+    <div class="grid g5" id="home-metrics">
+      <div class="card metric"><div class="lbl">Accuracy</div><div class="val">-</div><div class="desc">Prediksi yang benar</div></div>
+      <div class="card metric"><div class="lbl">Precision</div><div class="val">-</div><div class="desc">Ketepatan prediksi Puas</div></div>
+      <div class="card metric"><div class="lbl">Recall</div><div class="val">-</div><div class="desc">Penumpang puas yang dikenali</div></div>
+      <div class="card metric"><div class="lbl">F1-Score</div><div class="val">-</div><div class="desc">Keseimbangan Precision dan Recall</div></div>
+      <div class="card metric"><div class="lbl">AUC</div><div class="val">-</div><div class="desc">Kemampuan membedakan kelas</div></div>
+    </div>
+    <p class="small muted" id="home-data" style="margin-top:10px;"></p>
+
+    <h3 class="block-title">Alur proyek</h3>
+    <p class="section-sub">Enam tahap dari data mentah sampai aplikasi web.</p>
+    <div class="flow">
+      <div class="flow-step"><div class="no">1</div><h4>Data</h4><p>103.904 data latih dan 25.976 data uji dari Kaggle.</p></div>
+      <div class="flow-step"><div class="no">2</div><h4>EDA</h4><p>Distribusi target, kategori, layanan, dan korelasi.</p></div>
+      <div class="flow-step"><div class="no">3</div><h4>Preprocessing</h4><p>Buang kolom ID, isi nilai hilang, dan encoding.</p></div>
+      <div class="flow-step"><div class="no">4</div><h4>Model</h4><p>Regresi Logistik dengan StandardScaler.</p></div>
+      <div class="flow-step"><div class="no">5</div><h4>Evaluasi</h4><p>Confusion Matrix, Precision, Recall, F1, dan AUC.</p></div>
+      <div class="flow-step"><div class="no">6</div><h4>Aplikasi</h4><p>Flask, Joblib, dan deploy ke cloud.</p></div>
+    </div>
+
+    <h3 class="block-title">Temuan utama dari data</h3>
+    <p class="section-sub">Gambaran singkat yang membantu manajemen memahami kepuasan penumpang.</p>
+    <div class="grid g4">
+      <div class="card insight-card"><div class="big">69,4%</div><p>penumpang kelas Bisnis puas, dibanding 18,6% pada kelas Ekonomi.</p></div>
+      <div class="card insight-card"><div class="big">58,3%</div><p>penumpang perjalanan bisnis puas, dibanding 10,2% pada perjalanan pribadi.</p></div>
+      <div class="card insight-card"><div class="big">47,7%</div><p>pelanggan loyal puas, dibanding 23,7% pada pelanggan tidak loyal.</p></div>
+      <div class="card insight-card"><div class="big">4,03 vs 2,66</div><p>rata-rata skor boarding online penumpang puas dibanding tidak puas.</p></div>
+    </div>
+
+    <div class="card reco-card" style="margin-top:20px;">
+      <h3>Rekomendasi bisnis</h3>
+      <ul>
+        <li>Prioritaskan perbaikan layanan dengan selisih skor terbesar antara penumpang puas dan tidak puas: boarding online, hiburan di pesawat, dan kenyamanan kursi.</li>
+        <li>Beri perhatian khusus pada segmen dengan tingkat kepuasan terendah, yaitu perjalanan pribadi dan kelas Ekonomi.</li>
+        <li>Gunakan aplikasi ini untuk menandai penumpang yang berisiko tidak puas, lalu lakukan tindak lanjut seperti survei singkat atau penawaran kompensasi.</li>
+        <li>Komunikasikan keterlambatan secara proaktif karena keterlambatan memengaruhi penilaian penumpang.</li>
+      </ul>
+      <p class="small muted" style="margin:10px 0 0;">Temuan di atas menunjukkan hubungan statistik pada data, bukan hubungan sebab-akibat.</p>
+    </div>
+
+    <h3 class="block-title">Cara memakai aplikasi</h3>
+    <div class="grid g3" style="margin-top:10px;">
+      <div class="card stepcard"><span class="num">1</span><h4>Isi data penumpang</h4><p class="muted">Lengkapi tiga langkah: profil penumpang, detail penerbangan, dan penilaian layanan.</p></div>
+      <div class="card stepcard"><span class="num">2</span><h4>Model menghitung peluang</h4><p class="muted">Regresi Logistik mengubah data menjadi probabilitas penumpang puas lewat fungsi sigmoid.</p></div>
+      <div class="card stepcard"><span class="num">3</span><h4>Baca hasil dan rekomendasi</h4><p class="muted">Lihat prediksi, faktor penentu, dan saran tindakan untuk maskapai.</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== PREDIKSI ===================== -->
+  <section id="prediksi" class="tab">
+    <h2 class="section-title">Prediksi Kepuasan Penumpang</h2>
+    <p class="section-sub">Isi data pada tiga langkah di bawah ini, lalu tekan Prediksi. Nilai awal sudah terisi sehingga Anda hanya mengubah yang perlu.</p>
+
+    <div class="pred-layout">
+      <div class="card">
+        <div class="tools">
+          <button class="btn btn-ghost" id="ex-puas" type="button">Isi Contoh Puas</button>
+          <button class="btn btn-ghost" id="ex-tidak" type="button">Isi Contoh Tidak Puas</button>
+          <button class="btn btn-ghost" id="btn-reset" type="button">Reset</button>
+        </div>
+
+        <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+        <div class="pills" id="pills">
+          <button class="pill active" data-step="0" type="button">1. Profil Penumpang</button>
+          <button class="pill" data-step="1" type="button">2. Detail Penerbangan</button>
+          <button class="pill" data-step="2" type="button">3. Penilaian Layanan</button>
+        </div>
+
+        <div class="step active" id="step0"></div>
+        <div class="step" id="step1"></div>
+        <div class="step" id="step2">
+          <p class="muted small">Beri skor 1 (sangat buruk) sampai 5 (sangat baik). Pilih N/A jika layanan tidak digunakan penumpang.</p>
+          <div id="rating-list"></div>
+        </div>
+
+        <div class="form-nav">
+          <button class="btn btn-ghost" id="btn-back" type="button">Kembali</button>
+          <button class="btn btn-primary" id="btn-next" type="button">Lanjut</button>
+        </div>
+      </div>
+
+      <div class="pred-side">
+        <div class="card" id="result-card" aria-live="polite">
+          <div class="placeholder" id="result-empty">
+            <h4>Hasil prediksi akan tampil di sini</h4>
+            <p>Lengkapi form di sebelah kiri, lalu tekan Prediksi. Anda juga bisa memakai tombol Isi Contoh untuk mencoba cepat.</p>
+          </div>
+          <div id="result-body" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:22px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h3 style="margin:0;">Riwayat prediksi sesi ini</h3>
+        <button class="btn btn-ghost" id="btn-clear" type="button">Hapus Riwayat</button>
+      </div>
+      <div id="history" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PERFORMA MODEL ===================== -->
+  <section id="performa" class="tab">
+    <h2 class="section-title">Performa Model</h2>
+    <p class="section-sub">Seluruh angka dihitung pada data uji. Bagian ini mengikuti materi modul: Confusion Matrix, metrik klasifikasi, kurva ROC dan AUC, serta fungsi sigmoid.</p>
+    <div id="perf-error" class="errbox" style="display:none;">Data performa belum dapat dimuat. Muat ulang halaman.</div>
+
+    <div class="grid g5" id="perf-metrics"></div>
+
+    <div class="grid g2" style="margin-top:20px;">
+      <div class="card">
+        <h3>Confusion Matrix</h3>
+        <p class="muted small">Kelas positif adalah Puas. Baris menunjukkan kondisi aktual, kolom menunjukkan prediksi model.</p>
+        <div class="cm" id="cm"></div>
+        <p class="small muted" style="margin-top:12px;" id="cm-note"></p>
+      </div>
+      <div class="card">
+        <h3>Kurva ROC dan AUC</h3>
+        <p class="muted small">Semakin melengkung ke sudut kiri atas, semakin baik model membedakan penumpang puas dan tidak puas.</p>
+        <div id="roc"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Simulasi Ambang Batas (Threshold)</h3>
+      <p class="muted">Geser ambang batas untuk melihat trade-off antara Precision dan Recall. Prediksi Puas diberikan jika probabilitas lebih besar atau sama dengan ambang batas.</p>
+      <div class="range-wrap">
+        <label for="thr"><b>Ambang batas: <span id="thr-val">0,50</span></b></label>
+        <input type="range" id="thr" min="0.05" max="0.95" step="0.05" value="0.5">
+      </div>
+      <div class="kv" id="thr-out"></div>
+      <p class="small muted" style="margin-top:12px;" id="thr-note"></p>
+    </div>
+
+    <div class="card">
+      <h3>Pengaruh Tiap Fitur (Koefisien)</h3>
+      <p class="muted small">Fitur numerik sudah distandarisasi, sehingga koefisien dapat dibandingkan. Batang ke kanan menaikkan peluang Puas, ke kiri menurunkannya. Odds ratio di atas 1 berarti menaikkan peluang Puas.</p>
+      <div id="coef"></div>
+      <p class="small muted" style="margin-top:12px;">Catatan: keterlambatan keberangkatan dan kedatangan berkorelasi sangat kuat (sekitar 0,96), sehingga koefisien keduanya sebaiknya dibaca sebagai satu kelompok keterlambatan, bukan masing-masing.</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3>Fungsi Sigmoid</h3>
+        <p class="muted small">Regresi Logistik menghitung skor linear z, lalu mengubahnya menjadi probabilitas antara 0 dan 1.</p>
+        <p><b>Rumus:</b> sigma(z) = 1 / (1 + e^(-z)), dengan z = b0 + b1x1 + b2x2 + ... + bnxn</p>
+        <div id="sigmoid"></div>
+      </div>
+      <div class="card">
+        <h3>Metrik yang Paling Penting</h3>
+        <div id="discussion"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EKSPLORASI DATA ===================== -->
+  <section id="eksplorasi" class="tab">
+    <h2 class="section-title">Eksplorasi Data</h2>
+    <p class="section-sub">Gambaran data latih sebelum model dibuat. Pilih topik di bawah ini.</p>
+    <div class="subtabs" id="eda-tabs"></div>
+    <div class="card">
+      <img class="eda-img" id="eda-img" alt="Grafik eksplorasi data">
+      <div class="insight" id="eda-text"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PANDUAN ===================== -->
+  <section id="panduan" class="tab">
+    <h2 class="section-title">Panduan</h2>
+    <p class="section-sub">Cara memakai aplikasi, arti istilah, daftar fitur, dan informasi proyek.</p>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3>Cara memakai</h3>
+        <ul class="clean">
+          <li>Buka tab <b>Prediksi</b>, lalu isi tiga langkah: profil penumpang, detail penerbangan, dan penilaian layanan.</li>
+          <li>Gunakan tombol <b>Isi Contoh</b> untuk mencoba cepat, atau <b>Reset</b> untuk mengembalikan nilai awal.</li>
+          <li>Tekan <b>Prediksi</b>. Hasil berisi label, probabilitas, faktor penentu, dan rekomendasi.</li>
+          <li>Buka tab <b>Performa Model</b> untuk melihat kualitas model dan mencoba simulasi ambang batas.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Tentang dataset</h3>
+        <ul class="clean">
+          <li>Sumber: Airline Passenger Satisfaction (Kaggle).</li>
+          <li>Data latih 103.904 penumpang dan data uji 25.976 penumpang.</li>
+          <li>Target: Puas (satisfied) atau Tidak Puas (neutral or dissatisfied).</li>
+          <li>22 fitur: profil, detail penerbangan, 14 penilaian layanan, dan keterlambatan.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Daftar fitur</h3>
+      <div id="fitur-table"></div>
+    </div>
+
+    <div class="card">
+      <h3>Kamus istilah</h3>
+      <details><summary>Probabilitas</summary><p>Peluang penumpang termasuk kelas Puas, bernilai 0 sampai 1. Contoh 0,85 berarti peluang puas 85%.</p></details>
+      <details><summary>Threshold (ambang batas)</summary><p>Batas probabilitas untuk menentukan kelas. Pada aplikasi ini 0,5: jika probabilitas Puas 0,5 atau lebih maka prediksinya Puas.</p></details>
+      <details><summary>Confusion Matrix</summary><p>Tabel 2x2 yang membandingkan kondisi aktual dengan prediksi, berisi True Positive, True Negative, False Positive, dan False Negative.</p></details>
+      <details><summary>Accuracy</summary><p>Persentase seluruh prediksi yang benar.</p></details>
+      <details><summary>Precision</summary><p>Dari semua penumpang yang diprediksi Puas, berapa persen yang benar-benar puas.</p></details>
+      <details><summary>Recall</summary><p>Dari semua penumpang yang sebenarnya puas, berapa persen yang berhasil dikenali model.</p></details>
+      <details><summary>F1-Score</summary><p>Rata-rata harmonik Precision dan Recall, berguna untuk menyeimbangkan keduanya.</p></details>
+      <details><summary>AUC</summary><p>Ukuran kemampuan model membedakan dua kelas di semua ambang batas. Nilai 1 sempurna, 0,5 setara menebak acak.</p></details>
+      <details><summary>Odds ratio</summary><p>Perubahan peluang relatif jika sebuah fitur naik satu satuan (fitur numerik: satu simpangan baku). Di atas 1 menaikkan peluang Puas, di bawah 1 menurunkannya.</p></details>
+    </div>
+
+    <div class="card">
+      <h3>Keterbatasan model</h3>
+      <ul class="clean">
+        <li>Hasil adalah perkiraan statistik, bukan kepastian untuk satu penumpang.</li>
+        <li>Koefisien menunjukkan hubungan, bukan sebab-akibat.</li>
+        <li>Model dilatih dari data survei satu sumber, sehingga perlu diuji ulang jika dipakai pada maskapai lain.</li>
+        <li>Skor layanan 0 (N/A) diperlakukan sebagai nilai skala sesuai data asli.</li>
+        <li>Kelas penerbangan dipetakan berurutan: Ekonomi 0, Ekonomi Plus 1, Bisnis 2.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Identitas proyek</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:180px;">Nama</th><td>Selsa Shafana Alfiyani</td></tr>
+          <tr><th>NIM</th><td>301240041</td></tr>
+          <tr><th>Kelas</th><td>5B</td></tr>
+          <tr><th>Mata Kuliah</th><td>Pembelajaran Mesin</td></tr>
+          <tr><th>Dosen Pengampu</th><td>Mohammad Bayu Anggara, S.Kom., M.Kom.</td></tr>
+          <tr><th>Program Studi</th><td>Teknik Informatika, Universitas Bale Bandung</td></tr>
+          <tr><th>Tugas</th><td>Tugas Akhir 3 (TA-03)</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <b>Prediksi Kepuasan Penumpang Maskapai Penerbangan Menggunakan Algoritma Logistic Regression</b><br>
+  Tugas Akhir 3 Pembelajaran Mesin | Selsa Shafana Alfiyani (301240041) | Universitas Bale Bandung
+</footer>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
